@@ -1,4 +1,4 @@
-import dynamic from 'next/dynamic';
+import nextDynamic from 'next/dynamic';
 import { supabase } from '@/lib/supabase';
 
 export const dynamic = 'force-dynamic';
@@ -8,7 +8,7 @@ export const metadata = {
 };
 
 // Dynamic import with ssr: false to prevent "window is not defined" error from Leaflet
-const MapWithNoSSR = dynamic(() => import('@/components/Map'), {
+const MapWithNoSSR = nextDynamic(() => import('@/components/Map'), {
   ssr: false,
   loading: () => (
     <div className="w-full h-full min-h-[500px] bg-gray-100 dark:bg-gray-800 animate-pulse flex items-center justify-center rounded-xl">
