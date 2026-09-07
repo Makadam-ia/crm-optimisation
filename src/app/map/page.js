@@ -1,5 +1,7 @@
 import dynamic from 'next/dynamic';
-import { supabaseAdmin } from '@/lib/supabase-server';
+import { supabase } from '@/lib/supabase';
+
+export const dynamic = 'force-dynamic';
 
 export const metadata = {
   title: 'Tournées | Highgency',
@@ -19,7 +21,7 @@ const MapWithNoSSR = dynamic(() => import('@/components/Map'), {
 async function getInterventionsMap() {
   try {
     // Only select rows that have been geocoded (lat and lng are not null)
-    const { data, error } = await supabaseAdmin
+    const { data, error } = await supabase
       .from('demande_devis')
       .select('id, nom, adresse, probleme, statut, lat, lng')
       .not('lat', 'is', null)

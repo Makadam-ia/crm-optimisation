@@ -1,12 +1,13 @@
 import { Suspense } from 'react';
-import { supabaseAdmin } from '@/lib/supabase-server';
+import { supabase } from '@/lib/supabase';
 import { Calendar, CheckCircle2, Clock, MapPin } from 'lucide-react';
 
+export const dynamic = 'force-dynamic';
 export const metadata = { title: 'Tableau de Bord | Highgency' };
 
 async function getDashboardStats() {
   try {
-    const { data: demandes, error } = await supabaseAdmin.from('demande_devis').select('statut');
+    const { data: demandes, error } = await supabase.from('demande_devis').select('statut');
     if (error) return { chantiersActifs: 0, tourneesDuJour: 0, aFacturer: 0 };
     
     const chantiersActifs = demandes.filter(d => d.statut === 'En attente' || d.statut === 'En cours').length;
@@ -20,7 +21,7 @@ async function getDashboardStats() {
 
 async function getRecentInterventions() {
   try {
-    const { data, error } = await supabaseAdmin
+    const { data, error } = await supabase
       .from('demande_devis')
       .select('id, nom, adresse, probleme, statut, created_at')
       .order('created_at', { ascending: false })
