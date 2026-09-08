@@ -5,6 +5,7 @@ import { Home, Map as MapIcon, LogOut, Settings } from 'lucide-react';
 export const metadata = {
   title: 'Highgency CRM',
   description: 'CRM Métier - Optimisation des tournées et automatisation',
+  manifest: '/manifest.json',
 };
 
 export default function RootLayout({ children }) {

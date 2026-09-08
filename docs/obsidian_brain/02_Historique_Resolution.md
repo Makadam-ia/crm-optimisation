@@ -53,3 +53,11 @@ Ce document retrace les obstacles techniques rencontrés lors du développement 
   - Refonte visuelle de Leaflet (remplacement de la TileLayer OpenStreetMap par la couche *CartoDB Dark Matter*) et ajout du sub-component `MapCenterUpdater` exploitant le hook `useMap().flyTo()` pour l'animation et le centrage dynamique ciblé.
 
     - Ajout des actions rapides : Appel (href="tel:"), Waze/Trajet (href="https://waze.com/ul?q="), et un `select` pour la mise à jour directe du statut en base de données Supabase.
+
+### 9. Transformation en PWA (Progressive Web App) et Mode Hors-ligne
+- **Symptôme/Besoin** : L'artisan utilise l'application sur le terrain et peut se retrouver dans des zones blanches sans connexion réseau (ou connexion instable). Il a besoin de consulter la liste des interventions même hors-ligne.
+- **Solution** :
+  - Installation de `@ducanh2912/next-pwa` pour l'intégration PWA robuste avec Next.js 14 App Router.
+  - Configuration de `next.config.mjs` pour générer un Service Worker ciblant le dossier `/public`.
+  - Implémentation d'une stratégie de cache réseau `StaleWhileRevalidate` spécifiquement pour l'URL de l'API Supabase via `workboxOptions.runtimeCaching`. Les requêtes sortantes vers Supabase sont ainsi interceptées et mises en cache pour garantir l'accès en lecture sans internet.
+
