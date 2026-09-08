@@ -2,9 +2,14 @@
 
 import { useState } from 'react';
 import { supabase } from '@/lib/supabase';
-import { Phone, Navigation, ChevronDown } from 'lucide-react';
+import { Phone, Navigation, ChevronDown, Map as MapIcon } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { useMapStore } from '@/store/useMapStore';
 
 export default function InterventionCard({ intervention }) {
+  const router = useRouter();
+  const setSelectedIntervention = useMapStore((state) => state.setSelectedIntervention);
+
   const [statut, setStatut] = useState(intervention.statut || 'En attente');
   const [isUpdating, setIsUpdating] = useState(false);
 
@@ -23,6 +28,13 @@ export default function InterventionCard({ intervention }) {
     if (error) {
        console.error("Erreur lors de la mise à jour", error);
        setStatut(intervention.statut); // Revert on error
+    }
+  };
+
+  const handleViewOnMap = () => {
+    if (intervention.lat && intervention.lng) {
+      setSelectedIntervention(intervention.id, intervention.lat, intervention.lng);
+      router.push('/map');
     }
   };
 
@@ -64,7 +76,7 @@ export default function InterventionCard({ intervention }) {
       </div>
       
       {/* Mobile-first Action Buttons with 44px min touch target */}
-      <div className="grid grid-cols-3 border-t border-gray-100 dark:border-gray-800 bg-gray-50 dark:bg-gray-900">
+      <div className="grid grid-cols-4 border-t border-gray-100 dark:border-gray-800 bg-gray-50 dark:bg-gray-900">
         <a 
           href={phoneHref}
           className="flex flex-col items-center justify-center p-2 min-h-[55px] border-r border-gray-100 dark:border-gray-800 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors"
@@ -82,6 +94,14 @@ export default function InterventionCard({ intervention }) {
           <Navigation className="w-5 h-5 mb-1" />
           <span className="text-[10px] uppercase font-bold tracking-wider">Trajet</span>
         </a>
+
+        <button 
+          onClick={handleViewOnMap}
+          className="flex flex-col items-center justify-center p-2 min-h-[55px] border-r border-gray-100 dark:border-gray-800 text-purple-600 hover:bg-purple-50 dark:hover:bg-purple-900/20 transition-colors"
+        >
+          <MapIcon className="w-5 h-5 mb-1" />
+          <span className="text-[10px] uppercase font-bold tracking-wider">Carte</span>
+        </button>
         
         <div className="relative flex flex-col items-center justify-center min-h-[55px] text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-800 transition-colors cursor-pointer">
           <select 

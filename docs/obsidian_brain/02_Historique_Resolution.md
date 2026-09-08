@@ -43,4 +43,13 @@ Ce document retrace les obstacles techniques rencontrés lors du développement 
     - Hiérarchisation : Problème (Titre principal), Nom & Adresse (Secondaire).
     - Code couleur dynamique (Rouge pour Urgence, Orange pour En attente, Vert pour Planifié).
     - Zones de clics élargies (Padding/Min-height de `55px` pour faciliter le tap).
+
+### 8. Synchronisation Zustand et Thème Sombre (Carte)
+- **Symptôme/Besoin** : L'expérience utilisateur nécessitait de pouvoir cliquer sur une carte d'intervention depuis le dashboard et d'être redirigé vers la carte centrée précisément sur l'adresse de cette intervention, dans une interface de navigation sobre (Dark Mode).
+- **Solution** :
+  - Installation de `zustand` (gestionnaire d'état léger et global).
+  - Création du store `src/store/useMapStore.js` pour partager les coordonnées de la dernière intervention cliquée.
+  - Câblage du bouton "Carte" dans le composant `InterventionCard.js` (mise à jour du store et `router.push('/map')`).
+  - Refonte visuelle de Leaflet (remplacement de la TileLayer OpenStreetMap par la couche *CartoDB Dark Matter*) et ajout du sub-component `MapCenterUpdater` exploitant le hook `useMap().flyTo()` pour l'animation et le centrage dynamique ciblé.
+
     - Ajout des actions rapides : Appel (href="tel:"), Waze/Trajet (href="https://waze.com/ul?q="), et un `select` pour la mise à jour directe du statut en base de données Supabase.
