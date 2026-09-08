@@ -61,3 +61,11 @@ Ce document retrace les obstacles techniques rencontrés lors du développement 
   - Configuration de `next.config.mjs` pour générer un Service Worker ciblant le dossier `/public`.
   - Implémentation d'une stratégie de cache réseau `StaleWhileRevalidate` spécifiquement pour l'URL de l'API Supabase via `workboxOptions.runtimeCaching`. Les requêtes sortantes vers Supabase sont ainsi interceptées et mises en cache pour garantir l'accès en lecture sans internet.
 
+
+
+### 10. Pivot de génération de Devis (Legal Compliance)
+- **Symptôme/Besoin** : L'approche de générer un PDF localement via `@react-pdf/renderer` a été jugée obsolète en vue des nouvelles réglementations sur la facturation électronique, et l'édition de document complexe n'avait pas sa place côté client.
+- **Solution** :
+  - Création de la route API sécurisée `src/app/api/billing/generate/route.js`.
+  - Le frontend (bouton "Devis" dans `InterventionCard.js`) appelle l'API de manière asynchrone avec un spinner de chargement, évitant de bloquer l'UI.
+  - L'API agit comme middleware backend : elle extrait les données complètes de la table `demande_devis` via Supabase (mode Server) puis relaie le payload entier vers un Webhook n8n (`N8N_BILLING_WEBHOOK_URL`) pour intégration au système de facturation conforme. Un mode simulation ("Dev") protège la route en cas de non-définition de l'URL n8n.
