@@ -10,7 +10,6 @@ export async function POST(request) {
       return NextResponse.json({ error: 'ID intervention manquant' }, { status: 400 });
     }
 
-    // 1. Récupération des données sécurisée via le backend
     const { data: intervention, error } = await supabaseAdmin
       .from('demande_devis')
       .select('*')
@@ -21,18 +20,9 @@ export async function POST(request) {
       return NextResponse.json({ error: 'Intervention introuvable' }, { status: 404 });
     }
 
-    // 2. Transmission au système de facturation tiers (n8n webhook)
-    const webhookUrl = process.env.N8N_BILLING_WEBHOOK_URL;
-    
-    if (!webhookUrl) {
-      // Comportement de repli si l'URL n'est pas encore configurée (Mode dev)
-      console.warn("N8N_BILLING_WEBHOOK_URL n'est pas définie. Simulation de succès.");
-      // Simuler une petite latence réseau
-      await new Promise(resolve => setTimeout(resolve, 800));
-      return NextResponse.json({ success: true, simulated: true, interventionId: id });
-    }
+    const webhookUrl = 'https://hook.eu2.make.com/2uzdmxthla7e7rajf3rk7bvd9yc3ehlg';
 
-    const n8nResponse = await fetch(webhookUrl, {
+    const makeResponse = await fetch(webhookUrl, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -44,8 +34,8 @@ export async function POST(request) {
       }),
     });
 
-    if (!n8nResponse.ok) {
-      throw new Error(`Erreur lors de l'appel à n8n: ${n8nResponse.statusText}`);
+    if (!makeResponse.ok) {
+      throw new Error(`Erreur lors de l'appel à Make: ${makeResponse.statusText}`);
     }
 
     return NextResponse.json({ success: true });
