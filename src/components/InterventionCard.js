@@ -19,17 +19,24 @@ export default function InterventionCard({ intervention }) {
     setStatut(newStatus);
     setIsUpdating(true);
     
-    // Update in Supabase
     const { error } = await supabase
       .from('demande_devis')
       .update({ statut: newStatus })
       .eq('id', intervention.id);
       
     setIsUpdating(false);
+    
     if (error) {
        console.error("Erreur lors de la mise à jour", error);
-       setStatut(intervention.statut); // Revert on error
+       setStatut(intervention.statut);
+       return;
     }
+
+    fetch('/api/webhook/status', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id: intervention.id, status: newStatus }),
+    }).catch((err) => console.error('Erreur Webhook:', err));
   };
 
   const handleViewOnMap = () => {
@@ -64,7 +71,6 @@ export default function InterventionCard({ intervention }) {
     }
   };
 
-  // Status Color mappings
   let statusColor = 'bg-gray-100 text-gray-800 border-gray-200';
   if (statut.includes('Urgence') || statut.includes('Urgent')) {
     statusColor = 'bg-red-100 text-red-800 border-red-200';
@@ -76,7 +82,6 @@ export default function InterventionCard({ intervention }) {
     statusColor = 'bg-blue-100 text-blue-800 border-blue-200';
   }
 
-  // Formatting phone number string for href
   const phoneHref = intervention.telephone 
     ? `tel:${intervention.telephone.replace(/\s+/g, '')}` 
     : '#';
@@ -101,7 +106,6 @@ export default function InterventionCard({ intervention }) {
         </div>
       </div>
       
-      {/* Mobile-first Action Buttons with 44px min touch target */}
       <div className="grid grid-cols-5 border-t border-gray-100 dark:border-gray-800 bg-gray-50 dark:bg-gray-900">
         <a 
           href={phoneHref}
