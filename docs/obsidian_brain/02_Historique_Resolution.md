@@ -69,3 +69,13 @@ Ce document retrace les obstacles techniques rencontrés lors du développement 
   - Création de la route API sécurisée `src/app/api/billing/generate/route.js`.
   - Le frontend (bouton "Devis" dans `InterventionCard.js`) appelle l'API de manière asynchrone avec un spinner de chargement, évitant de bloquer l'UI.
   - L'API agit comme middleware backend : elle extrait les données complètes de la table `demande_devis` via Supabase (mode Server) puis relaie le payload entier vers un Webhook n8n (`N8N_BILLING_WEBHOOK_URL`) pour intégration au système de facturation conforme. Un mode simulation ("Dev") protège la route en cas de non-définition de l'URL n8n.
+
+
+
+### 11. Infrastructure API pour Automatisations (IA & Voix)
+
+Symptôme/Besoin : Préparation de l'architecture backend pour recevoir les flux de données externes sans solliciter le client.
+Solution : Création de trois endpoints dans l'App Router :
+- `/api/vision/route.js` : Réception d'URLs d'images pour analyse ultérieure via Gemini.
+- `/api/webhook/status/route.js` : Émission de payloads vers n8n lors du changement de statut d'une intervention.
+- `/api/vapi/inbound/route.js` : Réception de webhooks entrants depuis l'agent vocal Vapi.ai et insertion directe dans la base Supabase via le Service Role.
